@@ -243,7 +243,7 @@ def check_var(self) -> str:
     value=$(readvar "$1")
     if [ -z "$value" ]; then
         cmdline=$(awk -F '--' '{print $1}' /proc/cmdline)  # Get everything before '--'
-        if echo "$cmdline" | grep -qE "(^|\s)$1(\s|$)"; then
+        if printf "%s\n" "$cmdline" | awk -v key="$1" '{ for (i = 1; i <= NF; i++) if ($i == key) found = 1 } END { exit !found }'; then
             return 0
         fi
         return 1
